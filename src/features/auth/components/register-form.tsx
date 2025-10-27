@@ -28,7 +28,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-//import { authClient } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
+
 
 
 const registerSchema = z.object({
@@ -57,6 +58,22 @@ export function RegisterForm() {
 
   const onSubmit = async (values: RegisterFormValues) => {
     console.log(values);
+    await authClient.signUp.email(
+      {
+        name: values.email,
+        email: values.email,
+        password: values.password,
+        callbackURL: "/"
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        }
+      }
+    )
   }
 
   const isPending = form.formState.isSubmitting;
