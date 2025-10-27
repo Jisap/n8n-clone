@@ -1,6 +1,7 @@
 import { getQueryClient, trpc } from '@/trpc/server'
 import { Client } from './client'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { Suspense } from 'react';
 
 
 
@@ -15,7 +16,9 @@ const Page = async() => {
   return (
     <div className='text-red-500'>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <Client />
+        <Suspense fallback={<p>Loading...</p>}>
+          <Client />
+        </Suspense>
       </HydrationBoundary>
     </div>
   )
