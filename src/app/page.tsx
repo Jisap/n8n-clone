@@ -1,42 +1,18 @@
-"use client"
+import { requireAuth } from "@/lib/auth-utils"
 
 
-import { Button } from '@/components/ui/button';
-import { authClient } from '@/lib/auth-client';
 
 
-const Page = () => {
+const Page = async() => {
 
-  const { data } = authClient.useSession();
+  await requireAuth()
 
   return (
     <div className='min-h-screen min-w-screen flex items-center justify-center'>
-      {JSON.stringify(data)}
-
-      {data && (
-        <Button onClick={() => authClient.signOut()}>
-          Logout
-        </Button>
-      )}
+      Protected server component
     </div>
   )
 }
 
-// const Page = async () => {
-
-//   const queryClient = getQueryClient();
-
-//   void queryClient.prefetchQuery(trpc.getUsers.queryOptions()); // PreCarga los datos en la caché de React Query.
-
-//   return (
-//     <div className='text-red-500'>
-//       <HydrationBoundary state={dehydrate(queryClient)}>
-//         <Suspense fallback={<p>Loading...</p>}>
-//           <Client />
-//         </Suspense>
-//       </HydrationBoundary>
-//     </div>
-//   )
-// }
 
 export default Page
