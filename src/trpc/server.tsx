@@ -12,7 +12,7 @@ export const getQueryClient = cache(makeQueryClient);
 
 // Creación de un "caller" para ejecutar procedimientos de tRPC en el servidor
 // Genera una función para llamar procedimientos de tRPC sin cliente HTTP.
-const caller = createCallerFactory(appRouter)(createTRPCContext);                  
+export const caller = createCallerFactory(appRouter)(createTRPCContext);                  
 
 
 /**
