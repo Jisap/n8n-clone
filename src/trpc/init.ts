@@ -17,7 +17,8 @@ const t = initTRPC.create({                                    // Inicializa tRP
 export const createTRPCRouter = t.router;                      // Constructor de routes para agrupar procedimientos                   
 export const createCallerFactory = t.createCallerFactory;      // Exportamos una fabrical para crear callers -> permite llamar procedimientos desde el server
 export const baseProcedure = t.procedure;                      // Base para crear procedimientos
-export const protectedProcedure = baseProcedure.use(
+
+export const protectedProcedure = baseProcedure.use(           // Procedimiento protegido, solo permite llamarlo si el usuario está autenticado.
   async({ ctx, next }) => {
     const session = await auth.api.getSession({
       headers: await headers(),
