@@ -1,0 +1,6 @@
+# mprocs.yaml (Correcto para Windows)
+procs:
+  dev:
+    cmd: [cmd, /c, npm run dev]
+  inngest:
+    cmd: [cmd, /c, npm run inngest:dev]

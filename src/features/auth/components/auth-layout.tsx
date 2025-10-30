@@ -9,7 +9,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
       <div className='flex w-full max-w-sm flex-col gap-6'>
         <Link href="/" className='flex items-center gap-2 self-center font-medium'>
           <Image
-            src="/logos/log.svg"
+            src="/logos/logo.svg"
             alt="Logo"
             width={30}
             height={30}

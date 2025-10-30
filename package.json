@@ -10,7 +10,9 @@
     "format": "biome format --write",
     "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prisma:studio": "dotenv -e .env.local -- prisma studio",
-    "prisma:generate": "dotenv -e .env.local -- prisma generate"
+    "prisma:generate": "dotenv -e .env.local -- prisma generate",
+    "inngest:dev": "inngest-cli dev",
+    "dev:all": "mprocs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -25,6 +27,7 @@
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
+    "inngest": "^3.44.3",
     "lucide-react": "^0.548.0",
     "next": "15.5.4",
     "next-themes": "^0.4.6",
@@ -43,6 +46,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv-cli": "^10.0.0",
+    "inngest-cli": "^1.12.1",
+    "mprocs": "^0.7.3",
     "prisma": "^6.18.0",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
