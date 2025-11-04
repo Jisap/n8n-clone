@@ -7,5 +7,5 @@ console.log("🔍 Primeros 10 caracteres:", process.env.POLAR_ACCESS_TOKEN?.subs
 
 export const polarClient = new Polar({
   accessToken: process.env.POLAR_ACCESS_TOKEN,
-
+  server: "sandbox"
 })
