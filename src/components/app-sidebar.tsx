@@ -114,7 +114,7 @@ export const AppSidebar = () => {
             <SidebarMenuButton 
               tooltip="Billing Portal"
               className="gap-x-4 h-10 px-4"
-              onClick={()=>{} }
+              onClick={() => authClient.customer.portal() }
             >
               <CreditCardIcon className="size-4" />
               <span>Billing Portal</span>
