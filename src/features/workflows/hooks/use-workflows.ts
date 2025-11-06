@@ -16,7 +16,7 @@ export const useSuspenseWorkflows = () => {
 // Hook to create a new workflow
 
 export const useCreateWorkflow = () => {
-  const router = useRouter();
+  
   const queryClient = useQueryClient();
   const trpc = useTRPC();
 
@@ -25,7 +25,6 @@ export const useCreateWorkflow = () => {
       onSuccess: (data) => {
         toast.success(`Workflow" ${data.name} "created successfully!`);
         queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions());
-        router.push(`/workflows/${data.id}`);
       },
       onError: (error) => {
         toast.error(`Failed to create workflow: ${error.message}`);
