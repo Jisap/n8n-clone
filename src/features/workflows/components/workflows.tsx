@@ -2,6 +2,7 @@
 
 import { EntityContainer, EntityHeader } from "@/components/entity-components";
 import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows";
+import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 
 
 export const WorkflowsList = () => {
@@ -20,11 +21,14 @@ export const WorkflowsList = () => {
 export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
   
   const  createWorkflow  = useCreateWorkflow();
+  const { handleError, modal } = useUpgradeModal();
+
+
   const handleCreate = () => {
     createWorkflow.mutate( undefined, {
       onError: (error) => {
-        // TODO: Open upgrade modal
-        console.error(error);
+        // handleError -> setOpen=true -> modal
+        handleError(error)
       }
     });
   }
@@ -32,6 +36,7 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
 
   return(
     <>
+      {modal}
       <EntityHeader 
         title="Workflows"
         description="Create and manage your workflows"
