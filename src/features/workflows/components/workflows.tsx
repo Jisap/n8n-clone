@@ -1,11 +1,12 @@
 "use client"
 
-import { EntityContainer, EntityHeader, EntitySearch } from "@/components/entity-components";
+import { EntityContainer, EntityHeader, EntityPagination, EntitySearch } from "@/components/entity-components";
 import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "@/hooks/use-entity-search";
+import { Workflow } from "lucide-react";
 
 
 export const WorkflowsSearch = () => {
@@ -22,6 +23,23 @@ export const WorkflowsSearch = () => {
       onChange={onSearchChange}
       placeholder="Search workflows"
     />
+  )
+}
+
+export const WorkflowsPagination = () => {
+
+  const workflows = useSuspenseWorkflows();                 // Suspende la renderización del componente hasta que los datos sean recibidos
+  const[params, setParams] = useWorkflowsParams();          // Lee y gestiona el estado de los parámetros de la URL.
+
+
+  return (
+    <EntityPagination
+      disabled={workflows.isFetching}
+      totalPages={workflows.data.totalPages}
+      page={workflows.data.page}
+      onPageChange={(page) => setParams({ ...params, page })}  // Actualiza el estado de los parámetros de la URL gracias a nuqs
+    />
+
   )
 }
 
@@ -79,7 +97,7 @@ export const WorkflowsContainer = ({ children }: { children: React.ReactNode }) 
     <EntityContainer
       header={<WorkflowsHeader />}
       search={<WorkflowsSearch />}
-      pagination={<></>}
+      pagination={<WorkflowsPagination />}
     >
       {children}
     </EntityContainer>
