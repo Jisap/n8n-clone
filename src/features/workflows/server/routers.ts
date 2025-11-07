@@ -1,3 +1,5 @@
+import page from "@/app/(dashboard)/(rest)/credentials/page";
+import { PAGINATION } from "@/config/constants";
 import prisma from "@/lib/db";
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
 import { generateSlug } from "random-word-slugs"
@@ -47,11 +49,56 @@ export const workflowsRouter = createTRPCRouter({
         })
       }),
   getMany: protectedProcedure
-    .query(({ ctx }) => {
-      return prisma.workflow.findMany({
-        where: {
-          userId: ctx.auth.user.id // Se permite ver todos los workflows que le pertenecen
-        }
+    .input(
+      z.object({
+        page: z.number().default(PAGINATION.DEFAULT_PAGE),
+        pageSize: z
+          .number()
+          .min(PAGINATION.MIN_PAGE_SIZE)
+          .max(PAGINATION.MAX_PAGE_SIZE)
+          .default(PAGINATION.DEFAULT_PAGE_SIZE),
+        search: z.string().default(""),
       })
-    }),
+    )
+    .query(async({ ctx, input }) => {
+      const { page, pageSize, search } = input;
+
+      const[items, totalCount] = await Promise.all([
+        prisma.workflow.findMany({
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+          where: {
+            userId: ctx.auth.user.id, // Se permite ver todos los workflows que le pertenecen
+            name: {
+              contains: search,       // Filtra los workflows que contengan la cadena de búsqueda
+              mode: "insensitive",
+            },
+          },
+          orderBy: {
+            updatedAt: "desc",
+          }
+        }),
+        prisma.workflow.count({
+          where: {
+            userId: ctx.auth.user.id,
+          }
+        }),
+      ]);
+
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      const hasNextPage = page < totalPages;
+      const hasPreviousPage = page > 1;
+
+      return {
+        items,
+        page,
+        pageSize,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+        totalCount,
+      };
+    }) 
+    
 })
