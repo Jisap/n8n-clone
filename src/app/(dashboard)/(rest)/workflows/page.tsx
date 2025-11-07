@@ -1,12 +1,20 @@
 import { WorkflowsContainer, WorkflowsList } from "@/features/workflows/components/workflows";
+import { workflowsParamsLoader } from "@/features/workflows/server/params-loader";
 import { prefetchWorkflows } from "@/features/workflows/server/prefetch";
 import { requireAuth } from "@/lib/auth-utils";
 import { HydrateClient } from "@/trpc/server";
+import { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary"
 
 
-const page = async() => {
+type Props = {
+  searchParams: Promise<SearchParams>;
+}
+
+
+
+const page = async({ searchParams }: Props) => {
 
   await requireAuth();
 
@@ -14,7 +22,9 @@ const page = async() => {
   // cache QueryClient -> HydrateCliente recibe cache -> serializa en un JSON -> 
   // HydrateClient incrusta el JSON en el html -> el cliente lo renderiza
 
-  prefetchWorkflows()
+  const params = await workflowsParamsLoader(searchParams);
+
+  prefetchWorkflows(params)
 
   return (
     // WorkflowsContainer -> EntityContainer -> WorkflowsHeader -> EntityHeader -> title, description & button
