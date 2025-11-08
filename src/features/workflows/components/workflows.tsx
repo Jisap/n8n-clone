@@ -1,6 +1,6 @@
 "use client"
 
-import { EntityContainer, EntityHeader, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
+import { EmptyView, EntityContainer, EntityHeader, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
 import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
@@ -47,6 +47,12 @@ export const WorkflowsPagination = () => {
 export const WorkflowsList = () => {
 
   const workflows = useSuspenseWorkflows();
+
+  if(workflows.data.items.length === 0) {
+    return (
+      <WorkflowsEmpty />
+    )
+  }
 
   return (
     <div className="flex flex-1 justify-center items-center">
@@ -113,5 +119,29 @@ export const WorkflowsLoading = () => {
 export const WorkflowsError = () => {
   return ( 
     <ErrorView message="Error Loading workflows"/>
+  )
+}
+
+export const WorkflowsEmpty = () => {
+
+  const createWorkflow = useCreateWorkflow();
+  const { handleError, modal } = useUpgradeModal();
+
+  const handleCreate = () => {
+    createWorkflow.mutate(undefined, {
+      onError: (error) => {
+        handleError(error)
+      }
+    })
+  }
+
+  return ( 
+    <>
+      {modal}
+      <EmptyView 
+        message="You haven't created any workflows yet. Get started by creating your first workflow."
+        onNew={handleCreate}
+      />
+    </>
   )
 }

@@ -1,7 +1,15 @@
-import { AlertTriangleIcon, Loader2Icon, PlusIcon, SearchIcon } from "lucide-react";
+import { AlertTriangleIcon, Loader2Icon, PackageOpenIcon, PlusIcon, SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Input } from "./ui/input";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 
 
 type EntitHeaderProps = {
@@ -208,5 +216,43 @@ export const ErrorView = ({
         </p>
       )}
     </div>
+  )
+}
+
+interface EmptyViewProps extends StateViewProps {
+  onNew?: () => void;
+}
+
+export const EmptyView = ({
+  message,
+  onNew,
+}: EmptyViewProps) => {
+  
+  return (
+    <Empty className="border border-dashed bg-white">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <PackageOpenIcon />
+        </EmptyMedia>
+      </EmptyHeader>
+
+      <EmptyTitle>
+        No items
+      </EmptyTitle>
+
+      {!!message && (
+        <EmptyDescription>
+          { message }
+        </EmptyDescription>
+      )}
+
+      {!!onNew && (
+        <EmptyContent>
+          <Button onClick={onNew}>
+            Add item
+          </Button>
+        </EmptyContent>
+      )}
+    </Empty>
   )
 }
