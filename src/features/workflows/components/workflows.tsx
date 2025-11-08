@@ -1,7 +1,7 @@
 "use client"
 
 import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
-import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows";
+import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
@@ -9,6 +9,7 @@ import { useEntitySearch } from "@/hooks/use-entity-search";
 import { Workflow } from "@/generated/prisma/client";
 import { WorkflowIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 
 
 export const WorkflowsSearch = () => {
@@ -148,6 +149,21 @@ export const WorkflowsEmpty = () => {
 }
 
 export const WorkflowItem = ({data }: { data: Workflow }) => {
+
+  const removeWorkflow = useRemoveWorkflow();
+
+  const handleRemove = () => {
+    removeWorkflow.mutate({id: data.id}, {
+      onSuccess: () => {
+        toast.success(`Workflow "${data.name}" deleted successfully!`);
+      },
+      onError: (error) => {
+        toast.error(`Failed to delete workflow: ${error.message}`);
+        console.error(error);
+      }
+    })
+  }
+
   return (
     <EntityItem 
       href={`/workflows/${data.id}`}
@@ -164,7 +180,7 @@ export const WorkflowItem = ({data }: { data: Workflow }) => {
           <WorkflowIcon className="size-5 text-muted-foreground" />
         </div>
       }
-      onRemove={() => {}}
+      onRemove={handleRemove}
       isRemoving={false}
     />
   )
