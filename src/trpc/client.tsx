@@ -8,6 +8,7 @@ import { createTRPCContext } from '@trpc/tanstack-react-query';
 import { useState } from 'react';
 import { makeQueryClient } from './query-client';
 import type { AppRouter } from './routers/_app';
+import superjson from 'superjson';
 
 // Crea un contexto específico de tRPC para nuestra AppRouter.
 // Exporta el `TRPCProvider` para envolver la aplicación y un hook `useTRPC`
@@ -71,7 +72,7 @@ export function TRPCReactProvider(
     createTRPCClient<AppRouter>({                                         // Se usa createClient de tRPC para configurar el cliente.
       links: [                                                            // Configuracion de links -> links en tRPC define cómo se comunican las solicitudes con el backend.                                               
         httpBatchLink({                                                   // httpBatchLink es un link que permite permite agrupar varias solicitudes en una sola petición HTTP.
-          // transformer: superjson,                                      // superjson permite serializar y deserializar datos complejos correctamente.
+          transformer: superjson,                                         // superjson permite serializar y deserializar datos complejos correctamente.
           url: getUrl(),                                                  // getUrl devuelve devuelve la URL del servidor tRPC. 
         }),
       ],

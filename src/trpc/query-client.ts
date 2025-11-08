@@ -2,7 +2,7 @@ import {
   defaultShouldDehydrateQuery,
   QueryClient,
 } from '@tanstack/react-query';
-//import superjson from 'superjson';
+import superjson from 'superjson';
 
 /**
  * Crea y configura una instancia de `QueryClient` para TanStack Query.
@@ -20,12 +20,16 @@ export function makeQueryClient() {
         staleTime: 30 * 1000,                           // El tiempo en milisegundos durante el cual los datos de una query se consideran "frescos" y no se volverán a solicitar automáticamente. Aquí se establece en 30 segundos.
       },
       dehydrate: {                                      // Opciones para la deshidratación de los datos (extraer el estado de una query).
-        // serializeData: superjson.serialize,
+        serializeData: superjson.serialize,
        
         shouldDehydrateQuery: (query) =>                 // Determina qué consultas (queries) deben ser deshidratadas (serializadas) y enviadas al cliente.   
           defaultShouldDehydrateQuery(query) ||          // Además del comportamiento por defecto, también incluimos las queries
           query.state.status === 'pending',              // que están en estado 'pending' (pendientes). Esto es útil para que el
-      },                                                 // cliente pueda continuar con las peticiones que el servidor no completó,
-    },                                                   // evitando un "flash" de estado de carga.
+      },                                                 // cliente pueda continuar con las peticiones que el servidor no completó, // evitando un "flash" de estado de carga.
+      hydrate: {
+        deserializeData: superjson.deserialize,         // Opciones para la hidratación de los datos (extraer el estado de una query).
+      }
+    
+    },                                                   
   });
 }

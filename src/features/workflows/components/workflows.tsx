@@ -1,12 +1,13 @@
 "use client"
 
-import { EmptyView, EntityContainer, EntityHeader, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
+import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
 import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "@/hooks/use-entity-search";
-import { Workflow } from "lucide-react";
+import { Workflow } from "@/generated/prisma/client";
+import { WorkflowIcon } from "lucide-react";
 
 
 export const WorkflowsSearch = () => {
@@ -52,7 +53,7 @@ export const WorkflowsList = () => {
     <EntityList
       items={workflows.data.items}
       getKey={(workflow) => workflow.id}
-      renderItem={(workflow) => <p>{workflow.name}</p>}
+      renderItem={(workflow) => <WorkflowItem data={workflow} />}
       emptyView={<WorkflowsEmpty />}
     />
   )
@@ -142,5 +143,28 @@ export const WorkflowsEmpty = () => {
         onNew={handleCreate}
       />
     </>
+  )
+}
+
+export const WorkflowItem = ({data }: { data: Workflow }) => {
+  return (
+    <EntityItem 
+      href={`/workflows/${data.id}`}
+      title={data.name}
+      subtitle={
+        <>
+          Updated TODO{" "}
+          &bull; Created{" "}
+          TODO
+        </>
+      }
+      image={
+        <div className="size-8 flex items-center justify-center">
+          <WorkflowIcon className="size-5 text-muted-foreground" />
+        </div>
+      }
+      onRemove={() => {}}
+      isRemoving={false}
+    />
   )
 }

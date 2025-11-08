@@ -3,6 +3,7 @@ import { polarClient } from '@/lib/polar';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { headers } from 'next/headers';
 import { cache } from 'react';
+import superjson from 'superjson';
 
 export const createTRPCContext = cache(async () => {           // Crea el contexto para tRPC, que incluirá información del usuario autenticado.
   return { userId: 'user_123' };
@@ -10,7 +11,7 @@ export const createTRPCContext = cache(async () => {           // Crea el contex
 
 
 const t = initTRPC.create({                                    // Inicializa tRPC con el contexto y una transformación para manejar serialización de datos complejos.
-  // transformer: superjson,
+  transformer: superjson, 
 });
 
 
