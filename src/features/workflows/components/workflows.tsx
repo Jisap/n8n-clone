@@ -1,6 +1,6 @@
 "use client"
 
-import { EntityContainer, EntityHeader, EntityPagination, EntitySearch } from "@/components/entity-components";
+import { EntityContainer, EntityHeader, EntityPagination, EntitySearch, LoadingView } from "@/components/entity-components";
 import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
@@ -101,5 +101,11 @@ export const WorkflowsContainer = ({ children }: { children: React.ReactNode }) 
     >
       {children}
     </EntityContainer>
+  )
+}
+
+export const WorkflowsLoading = () => {
+  return ( 
+    <LoadingView entity="workflows"/>
   )
 }
