@@ -1,4 +1,4 @@
-import { Loader2Icon, PlusIcon, SearchIcon } from "lucide-react";
+import { AlertTriangleIcon, Loader2Icon, PlusIcon, SearchIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Input } from "./ui/input";
@@ -175,21 +175,38 @@ interface StateViewProps {
   message?: string;
 }
 
-interface LoadingViewProps extends StateViewProps {
-  entity?: string;
-}
+
 
 export const LoadingView = ({ 
   message, 
-  entity="items" 
-}: LoadingViewProps) => {
+}: StateViewProps) => {
   return (
     <div className="flex justify-center items-center h-full flex-1 flex-col gap-y-4">
-      <Loader2Icon className="size-6 animate-spin text-muted-foreground" />
+      <Loader2Icon className="size-6 animate-spin text-primary" />
 
-      <p className="text-sm text-muted-foreground">
-        {message || `Loading ${entity}...`}
-      </p>
+      {!!message && (
+        <p className="text-sm text-muted-foreground">
+          { message }
+        </p>
+      )}
+    </div>
+  )
+}
+
+
+
+export const ErrorView = ({
+  message,
+}: StateViewProps) => {
+  return (
+    <div className="flex justify-center items-center h-full flex-1 flex-col gap-y-4">
+      <AlertTriangleIcon className="size-6 text-primary" />
+
+      {!!message && (
+        <p className="text-sm text-muted-foreground">
+          {message}
+        </p>
+      )}
     </div>
   )
 }
