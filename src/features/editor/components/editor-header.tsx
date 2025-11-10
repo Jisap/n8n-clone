@@ -87,6 +87,7 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
   if(isEditing){
     return (
       <Input 
+        disabled={updateWorkflow.isPending}
         ref={inputRef}
         value={name}
         onChange={(e) => setName(e.target.value)}
