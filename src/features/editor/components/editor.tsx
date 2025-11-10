@@ -1,9 +1,16 @@
 "use client"
 
+import { ErrorView, LoadingView } from '@/components/entity-components'
 import { useSuspenseWorkflow } from '@/features/workflows/hooks/use-workflows'
 import React from 'react'
 
+export const EditorLoading = () => {
+  return <LoadingView message="Loading editor..." />
+};
 
+export const EditorError = () => {
+  return <ErrorView message="Error loading editor" />
+};
 
 
 const Editor = ({ workflowId }: { workflowId: string }) => {

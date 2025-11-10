@@ -1,3 +1,4 @@
+import Editor, { EditorError, EditorLoading } from "@/features/editor/components/editor";
 import { WorkflowsError, WorkflowsLoading } from "@/features/workflows/components/workflows";
 import { prefetchWorkflow } from "@/features/workflows/server/prefetch";
 import { requireAuth } from "@/lib/auth-utils";
@@ -22,10 +23,10 @@ const page = async ({ params }: PageProps) => {
 
   return (
     <HydrateClient>
-      <ErrorBoundary fallback={<p>Error</p>}>
+      <ErrorBoundary fallback={<EditorError />}>
         {/* Suspense maneja la renderización de componentes mientras se están cargando los datos */}
-        <Suspense fallback={<p>Loading...</p>}>
-
+        <Suspense fallback={<EditorLoading />}>
+          <Editor  workflowId={workflowId} />
         </Suspense>
       </ErrorBoundary>
     </HydrateClient>
