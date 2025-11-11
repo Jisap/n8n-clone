@@ -61,7 +61,7 @@ const Editor = ({ workflowId }: { workflowId: string }) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        nodeTypes={nodeComponents} // Le dice a React Flow qué componente de React debe usar para renderizar cada tipo de nodo.
+        nodeTypes={nodeComponents} // Le dice a React Flow qué componente de React debe usar para renderizar cada tipo de nodo. INITIAL -> initial-node -> workflow-node -> placeholder-node
         fitView
       >
         <Background />

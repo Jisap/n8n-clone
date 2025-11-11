@@ -8,7 +8,7 @@ import type { NodeTypes } from "@xyflow/react";
 // de nodo en el lienzo de React Flow. 
 
 export const nodeComponents = {
-  [NodeType.INITIAL]: InitialNode
+  [NodeType.INITIAL]: InitialNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;
