@@ -13,7 +13,10 @@ import {
   type Edge,
   type NodeChange,
   type EdgeChange,
-  type Connection
+  type Connection,
+  Background,
+  Controls,
+  MiniMap
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -61,7 +64,11 @@ const Editor = ({ workflowId }: { workflowId: string }) => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
-      />
+      >
+        <Background />
+        <Controls />
+        <MiniMap />
+      </ReactFlow>
     </div>
   )
 }
