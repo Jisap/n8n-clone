@@ -16,7 +16,7 @@ export const workflowsRouter = createTRPCRouter({
         userId: ctx.auth.user.id,
         nodes: {
           create: {
-            type: NodeType.INITIAL,
+            type: NodeType.INITIAL, 
             position: { x: 0, y: 0 },
             name: NodeType.INITIAL,
           }

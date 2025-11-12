@@ -56,7 +56,7 @@ interface NodeSelectorProps {
   children: React.ReactNode;
 }
 
-export function NodeSelector({ 
+export function NodeSelector({ // Su función no es renderizar un componente sino actualizar el estado de nodes que vive en editor.tsx
   open, 
   onOpenChange, 
   children 
@@ -92,20 +92,20 @@ export function NodeSelector({
         y: centerY + (Math.random() - 0.5) * 200,
       });
 
-      const newNode = {
+      const newNode = {                                                      // Crea un objeto de datos para el nuevo nodo
         id: createId(),
         data: {},
         position: flowPosition,
-        type: selection.type,
+        type: selection.type,                                                // y se le asigna el tipo de nodo seleccionado
       }
 
-      if(hasInitialTrigger){                                                  // Si ya existe un nodo inicial, se agrega al final del flujo de trabajo.
+      if(hasInitialTrigger){                                                 // Si ya existe un nodo inicial, se agrega al final del flujo de trabajo.
         return [newNode]
       }
 
       return [
-        ...nodes,
-        newNode,
+        ...nodes,                                                            // El estado en editor.tsx se actualiza -> ReactFlow se vuelve a renderizar -> 
+        newNode,                                                             // nodes encuentra el nuevo nodo cuyo type a cambiado -> renderiza el componente asociado al type
       ]
     })
 

@@ -58,7 +58,7 @@ const Editor = ({ workflowId }: { workflowId: string }) => {
   return (
     <div className='size-full'>
       <ReactFlow
-        nodes={nodes}
+        nodes={nodes} // Lista de nodos que se deben renderizar en el lienzo de React Flow
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
