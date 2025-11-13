@@ -70,6 +70,11 @@ const Editor = ({ workflowId }: { workflowId: string }) => {
         nodeTypes={nodeComponents} // Le dice a React Flow qué componente de React debe usar para renderizar cada tipo de nodo. INITIAL -> initial-node -> NodeSelector ->workflow-node -> placeholder-node
         fitView
         onInit={setEditor} // Se establece el estado de la instancia del editor de React Flow
+        snapGrid={[10, 10]}
+        snapToGrid
+        panOnScroll
+        panOnDrag={false}
+        selectionOnDrag
       >
         <Background />
         <Controls />
