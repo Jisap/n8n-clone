@@ -15,16 +15,41 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
-import { useSuspenseWorkflow, useUpdateWorkflowName } from '@/features/workflows/hooks/use-workflows'
+import { 
+  useSuspenseWorkflow, 
+  useUpdateWorkflowName, 
+  useUpdateWorkflow 
+} from '@/features/workflows/hooks/use-workflows'
+import { useAtomValue } from 'jotai'
+import { editorAtom } from '../store/atoms'
 
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
+  
+  const editor = useAtomValue(editorAtom);  // Se obtiene la instancia del editor de React Flow
+  const saveWorkflow = useUpdateWorkflow(); // Se obtiene la función para actualizar el workflow
+
+  const handleSave = () => {
+    if(!editor){
+      return;
+    }
+
+    const nodes = editor.getNodes();         // Se obtienen los nodos del editor de React Flow
+    const edges = editor.getEdges();         // Se obtienen las conexiones (lineas) del editor de React Flow
+
+    saveWorkflow.mutate({                    // Se actualiza el workflow
+      id: workflowId,
+      nodes,
+      edges
+    })
+  }
+
   return (
     <div className='ml-auto'>
       <Button
         size="sm"
-        onClick={() => {}}
-        disabled={false}
+        onClick={handleSave}
+        disabled={saveWorkflow.isPending}
       >
         <SaveIcon className='size-4' />
       </Button>
