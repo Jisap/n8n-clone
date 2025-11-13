@@ -22,6 +22,8 @@ import {
 import '@xyflow/react/dist/style.css';
 import { nodeComponents } from '@/config/node-components';
 import { AddNodeButton } from './add-node-button';
+import { useSetAtom } from 'jotai';
+import { editorAtom } from '../store/atoms';
 
 export const EditorLoading = () => {
   return <LoadingView message="Loading editor..." />
@@ -35,6 +37,8 @@ export const EditorError = () => {
 const Editor = ({ workflowId }: { workflowId: string }) => {
 
   const { data: workflow } = useSuspenseWorkflow(workflowId);  // Carga de datos del workflow
+
+  const setEditor = useSetAtom(editorAtom);                    // Se establece el estado del editor de React Flow
 
   const [nodes, setNodes] = useState<Node[]>(workflow.nodes);  // Se inicializas los nodos del workflow
   const [edges, setEdges] = useState<Edge[]>(workflow.edges);  // Se inicializas las conexiones (lineas) del workflow
@@ -65,6 +69,7 @@ const Editor = ({ workflowId }: { workflowId: string }) => {
         onConnect={onConnect}
         nodeTypes={nodeComponents} // Le dice a React Flow qué componente de React debe usar para renderizar cada tipo de nodo. INITIAL -> initial-node -> NodeSelector ->workflow-node -> placeholder-node
         fitView
+        onInit={setEditor} // Se establece el estado de la instancia del editor de React Flow
       >
         <Background />
         <Controls />

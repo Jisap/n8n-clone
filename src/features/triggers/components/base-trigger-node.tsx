@@ -1,6 +1,6 @@
 "use client"
 
-import { type NodeProps, Position } from "@xyflow/react";
+import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import { memo, type ReactNode, useCallback } from "react";
@@ -29,7 +29,19 @@ export const BaseTriggerNode = memo(
     onDoubleClick
   }: BaseTriggersNodeProps) => {
 
-    const handleDelete = () => {}
+    const { setNodes, setEdges } = useReactFlow()
+
+    const handleDelete = () => {
+      setNodes((currentNodes) => {
+        const updateNodes = currentNodes.filter((node) => node.id !== id); // Eliminamos el nodo del flujo de React Flow filtrandolo por su id
+        return updateNodes;
+      })
+
+      setEdges((currentEdges) => {
+        const updateEdges = currentEdges.filter((edge) => edge.source !== id && edge.target !== id); // Eliminamos las conexiones (lineas) del flujo de React Flow filtrandolas por su id de origen y su id de destino
+        return updateEdges;
+      })
+    }
 
     return (
       <WorkflowNode 
@@ -62,7 +74,7 @@ export const BaseTriggerNode = memo(
         </BaseNode>
       </WorkflowNode>
     )
- }
+  }
 )
 
 BaseTriggerNode.displayName = "BaseExecutionNode";
