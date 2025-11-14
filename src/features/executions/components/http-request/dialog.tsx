@@ -46,6 +46,8 @@ const formSchema = z.object({
   body: z.string().optional(),
 })
 
+export type FormType =  z.infer<typeof formSchema>
+
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -72,6 +74,16 @@ export const HttpRequestDialog = ({
       body: defaultBody,
     }
   });
+
+  useEffect(() => {
+    if (open){
+      form.reset({
+        endpoint: defaultEndPoint,
+        method: defaultMethod,
+        body: defaultBody,
+      })
+    }
+  },[open, defaultEndPoint, defaultMethod, defaultBody, form])
 
   const watchMethod = form.watch("method");                             // Permite obtener el valor del campo "method" en el formulario
   const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod); // Muestra el campo "body" en función del valor del campo "method"
