@@ -110,7 +110,7 @@ export const useUpdateWorkflow = () => {
   )
 }
 
-// Hook ti execute a workflow
+// Hook to execute a workflow
 
 export const useExecuteWorkflow = () => {
 

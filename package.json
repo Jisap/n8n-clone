@@ -56,6 +56,7 @@
     "sonner": "^2.0.7",
     "superjson": "^2.2.5",
     "tailwind-merge": "^3.3.1",
+    "toposort": "^2.0.2",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -64,6 +65,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/toposort": "^2.0.7",
     "dotenv-cli": "^10.0.0",
     "inngest-cli": "^1.12.1",
     "mprocs": "^0.7.3",
