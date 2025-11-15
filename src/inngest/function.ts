@@ -39,7 +39,7 @@ export const executeWorkflow = inngest.createFunction(
       const executor = getExecutor(node.type as NodeType);                // 1º se obtiene el ejecutor correspondiente al tipo de nodo
       
       context = await executor({                                          // 2º se ejecuta el ejecutor con los datos del nodo
-        data: node.data as Record<string, unknown>,                       // Se le pasa data expecífica de ese nodo (url, headers, etc)
+        data: node.data as Record<string, unknown>,                       // Se le pasa data expecífica de ese nodo (url, method, etc)
         nodeId: node.id,                                                  // Se le pasa el id del nodo
         context,                                                          // Se le pasa el contexto actual  
         step,                                                             // Se le pasa la herramienta de ejecución en inngest
