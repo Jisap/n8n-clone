@@ -3,6 +3,7 @@
 import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
 import prisma from "@/lib/db";
+import { topologicalSort } from './utils';
 
 
 
@@ -18,8 +19,8 @@ export const executeWorkflow = inngest.createFunction(
       throw new NonRetriableError("Workflow ID is missing");
     }
 
-    const nodes = await step.run("prepare-workflow", async() => {
-      const workflow = await prisma.workflow.findUniqueOrThrow({
+    const sortedNodes = await step.run("prepare-workflow", async() => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({           // Se obtiene el workflow
         where: { id: workflowId },
         include: { 
           nodes: true, 
@@ -27,9 +28,9 @@ export const executeWorkflow = inngest.createFunction(
         }
       });
 
-      return workflow.nodes;
+      return topologicalSort(workflow.nodes, workflow.connections);       // Se ordena los nodos de acuerdo a las conexiones
     })
     
-    return { nodes }
+    return { sortedNodes }
   },
 )
