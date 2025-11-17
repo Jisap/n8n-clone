@@ -4,9 +4,9 @@ import ky, { type Options as KyOptions } from "ky";
 
 
 type HttpRequestData = {
-  variableName?: string;
-  endpoint?: string;
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  variableName: string;
+  endpoint: string;
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: string;
 }
 
@@ -28,9 +28,14 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async({
     throw new NonRetriableError("Variable name is not configured");
   }
 
+  if(!data.method){
+    // TODO: Publish error state for http request
+    throw new NonRetriableError("Method is not configured");
+  }
+
   const result = await step.run(`http-request`, async () => {             // Run the http request step
-    const endpoint = data.endpoint!;                                      // Get the endpoint from the data
-    const method = data.method || "GET";                                  // Get the method from the data
+    const endpoint = data.endpoint;                                       // Get the endpoint from the data
+    const method = data.method;                                           // Get the method from the data
 
     const options: KyOptions = { method};                                 // Create a KyOptions object with the method
 
@@ -54,19 +59,11 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async({
         data: responseData
       }
     }  
-
-    if(data.variableName){                                                 // If a variable name is provided, add the payload to the context
-      return {
-        ...context,
-       [data.variableName]: responsePayload,
-      }
+                                                  
+    return {                                                              // Return the payload
+      ...context,                                                         // Merge the context with the payload
+      [data.variableName]: responsePayload,                               // Add the response payload to the context
     }
-
-    return {                                                              // Otherwise, return the context with the payload
-      ...context, 
-      ...responsePayload
-    }
-
   }) 
 
   // TODO: Publish "success" state for http request
