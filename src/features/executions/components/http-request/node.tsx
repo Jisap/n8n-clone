@@ -10,6 +10,7 @@ import { channel } from "diagnostics_channel";
 import { topic } from "@inngest/realtime";
 import { refreshAccessToken } from "better-auth";
 import { fetchHttpRequestRealtimeToken } from "./actions";
+import { HTTP_REQUEST_CHANNEL_NAME } from "@/inngest/channels/http-request";
 
 type HttpRequestNodeData = {
   variableName?: string;
@@ -27,7 +28,7 @@ export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
 
   const nodeStatus = useNodeStatus({
     nodeId: props.id,
-    channel: "http-request-execution", //httpRequestChannel().name
+    channel: HTTP_REQUEST_CHANNEL_NAME, //httpRequestChannel().name
     topic: "status",
     refreshToken: fetchHttpRequestRealtimeToken
   })
