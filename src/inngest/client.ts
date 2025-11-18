@@ -5,6 +5,6 @@ import { realtimeMiddleware } from "@inngest/realtime/middleware";
 export const inngest = new Inngest({ 
   id: "nodebase",
   middleware: [
-    realtimeMiddleware(),
+    realtimeMiddleware(), // Permite que las funciones publiquen mensajes en canales en tiempo real.
   ]
 });

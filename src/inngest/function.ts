@@ -49,7 +49,7 @@ export const executeWorkflow = inngest.createFunction(
         nodeId: node.id,                                                  // Se le pasa el id del nodo
         context,                                                          // Se le pasa el contexto actual  
         step,                                                             // Se le pasa la herramienta de ejecución en inngest
-        publish,                                                          // Se le pasa la herramienta de publicación en inngest
+        publish,                                                          // Se le pasa la herramienta de publicación de mensajes 
       })
     }                                      
 
