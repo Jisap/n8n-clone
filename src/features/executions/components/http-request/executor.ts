@@ -76,47 +76,60 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async({
     throw new NonRetriableError("Method is not configured");
   }
 
-  const result = await step.run(`http-request`, async () => {             // Run the http request step
-    const endpoint = Handlebars.compile(data.endpoint)(context)           // Get the endpoint from the data. Handlebars compila el endpoint teniendo encuenta el contexto del nodo anterior
-    const method = data.method;                                           // Get the method from the data
-
-    const options: KyOptions = { method};                                 // Create a KyOptions object with the method
-
-    if(["POST", "PUT", "PATCH"].includes(method)){                        // Si el method es POST, PUT o PATCH,
-        const resolved = Handlebars.compile(data.body || "{}")(context);  // obtenemos el body desde la data. Handlebars compila el body teniendo en cuenta el contexto del nodo anterior
-        JSON.parse(resolved);                                             // Parse the body as JSON
-        options.body = resolved;                                          // Set the body in the options
-        options.headers = {
-          "Content-Type": "application/json"
-        }
-    }
-
-    const response = await ky(endpoint, options);                         // Make the request using ky
-    const contentType = response.headers.get("content-type");             // Get the content type of the response
-    const responseData = contentType?.includes("application/json")        // If the content type is application/json, parse the response as JSON
-      ? await response.json()
-      : await response.text();                                            // Otherwise, parse the response as text
-
-    const responsePayload = {                                             // Create a payload with the response data
-      httpResponse: {
-        status: response.status,
-        statusText: response.statusText,
-        data: responseData
+  try {
+    const result = await step.run(`http-request`, async () => {             // Run the http request step
+      const endpoint = Handlebars.compile(data.endpoint)(context)           // Get the endpoint from the data. Handlebars compila el endpoint teniendo encuenta el contexto del nodo anterior
+      const method = data.method;                                           // Get the method from the data
+  
+      const options: KyOptions = { method};                                 // Create a KyOptions object with the method
+  
+      if(["POST", "PUT", "PATCH"].includes(method)){                        // Si el method es POST, PUT o PATCH,
+          const resolved = Handlebars.compile(data.body || "{}")(context);  // obtenemos el body desde la data. Handlebars compila el body teniendo en cuenta el contexto del nodo anterior
+          JSON.parse(resolved);                                             // Parse the body as JSON
+          options.body = resolved;                                          // Set the body in the options
+          options.headers = {
+            "Content-Type": "application/json"
+          }
       }
-    }  
-                                                  
-    return {                                                              // Return the payload
-      ...context,                                                         // Merge the context with the payload
-      [data.variableName]: responsePayload,                               // Add the response payload to the context
-    }
-  }) 
-
-  await publish(
-    httpRequestChannel().status({
-      nodeId,
-      status: "success"
+  
+      const response = await ky(endpoint, options);                         // Make the request using ky
+      const contentType = response.headers.get("content-type");             // Get the content type of the response
+      const responseData = contentType?.includes("application/json")        // If the content type is application/json, parse the response as JSON
+        ? await response.json()
+        : await response.text();                                            // Otherwise, parse the response as text
+  
+      const responsePayload = {                                             // Create a payload with the response data
+        httpResponse: {
+          status: response.status,
+          statusText: response.statusText,
+          data: responseData
+        }
+      }  
+                                                    
+      return {                                                              // Return the payload
+        ...context,                                                         // Merge the context with the payload
+        [data.variableName]: responsePayload,                               // Add the response payload to the context
+      }
     })
-  )
 
-  return result;
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "success"
+      })
+    )
+  
+    return result;
+  
+  } catch (error) {
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "error"
+      })
+    )
+
+    throw error;
+  }
+
 }

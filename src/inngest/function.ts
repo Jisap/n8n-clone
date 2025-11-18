@@ -13,7 +13,10 @@ import { httpRequestChannel } from "./channels/http-request";
 
 
 export const executeWorkflow = inngest.createFunction(
-  { id: "execute-workflow" },
+  { 
+    id: "execute-workflow", 
+    retries: 0 // Remove in production 
+  },
   { event: "workflow/execute.workflow",
     channels: [
       httpRequestChannel
