@@ -6,6 +6,7 @@ import prisma from "@/lib/db";
 import { topologicalSort } from './utils';
 import { NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/executions/lib/executor-registry";
+import { httpRequestChannel } from "./channels/http-request";
 
 
 
@@ -13,8 +14,13 @@ import { getExecutor } from "@/features/executions/lib/executor-registry";
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute-workflow" },
-  { event: "workflow/execute.workflow" },
-  async ({ event, step }) => {
+  { event: "workflow/execute.workflow",
+    channels: [
+      httpRequestChannel
+    ] 
+
+  },
+  async ({ event, step, publish }) => {
 
     const workflowId = event.data.workflowId;
     if(!workflowId) {
@@ -43,12 +49,13 @@ export const executeWorkflow = inngest.createFunction(
         nodeId: node.id,                                                  // Se le pasa el id del nodo
         context,                                                          // Se le pasa el contexto actual  
         step,                                                             // Se le pasa la herramienta de ejecución en inngest
+        publish,                                                          // Se le pasa la herramienta de publicación en inngest
       })
     }                                      
 
     return {
       workflowId,                                                         // 3º se devuelve el id del workflow que se ejecutó
       result: context                                                     // y el valor final de la variable context. Este objeto
-    }                                                                     // contiene el resultado acumulado de la ejecución de todos l 
-  },                                                                      // os nodos, representando la salida final de todo el flujo de trabajo.
+    }                                                                     // contiene el resultado acumulado de la ejecución de todos 
+  },                                                                      // los nodos, representando la salida final de todo el flujo de trabajo.
 )

@@ -2,6 +2,7 @@ import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
 import Handlebars from "handlebars"; // Lee los templates strings teniendo en cuenta el contexto de la respuesta del nodo anterior
+import { httpRequestChannel } from "@/inngest/channels/http-request";
 
 Handlebars.registerHelper("json", (context) => {               // Se registra un "helper" de Handlebars llamado "json" que recibe como parametro un objeto context (respuesta del nodo anterior). 
   const jsonString = JSON.stringify(context, null, 2);         // Lo convierte a una cadena JSON 
@@ -34,22 +35,44 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async({
   data,
   nodeId,
   context, // is the previous node's output
-  step
+  step,
+  publish,
 }) => {
-  // TODO: Publish "loading" state for http request
+  
+  await publish(
+    httpRequestChannel().status({
+      nodeId,
+      status: "loading"
+    })
+  )
 
   if(!data.endpoint){
-    // TODO: Publish error state for http request
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "error"
+      })
+    )
     throw new NonRetriableError("HTTP Request node: No endpoint configured");
   }
 
   if(!data.variableName){
-    // TODO: Publish error state for http request
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "error"
+      })
+    )
     throw new NonRetriableError("Variable name is not configured");
   }
 
   if(!data.method){
-    // TODO: Publish error state for http request
+    await publish(
+      httpRequestChannel().status({
+        nodeId,
+        status: "error"
+      })
+    )
     throw new NonRetriableError("Method is not configured");
   }
 
@@ -88,7 +111,12 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async({
     }
   }) 
 
-  // TODO: Publish "success" state for http request
+  await publish(
+    httpRequestChannel().status({
+      nodeId,
+      status: "success"
+    })
+  )
 
   return result;
 }
