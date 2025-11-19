@@ -7,6 +7,7 @@ import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/i
 import { generateSlug } from "random-word-slugs"
 import z from "zod";
 import { inngest } from "@/inngest/client";
+import { sendWorkflowExecution } from "@/inngest/utils";
 
 
 
@@ -21,10 +22,15 @@ export const workflowsRouter = createTRPCRouter({
         },
       });
 
-      await inngest.send({
-        name: "workflow/execute.workflow",
-        data: { workflowId: input.id }
-      })
+      // await inngest.send({
+      //   name: "workflow/execute.workflow",
+      //   data: { workflowId: input.id }
+      // });
+
+      // Se sustituye la forma de enviar la data al evento de inngest 
+      // que luego function.ts ejecutará con un executor de un channel
+
+      await sendWorkflowExecution({ workflowId: input.id }); 
 
       return workflow
     }),
