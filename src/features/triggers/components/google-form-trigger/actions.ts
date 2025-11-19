@@ -1,12 +1,11 @@
 "use server"
 
 import { getSubscriptionToken, type Realtime } from "@inngest/realtime"
-import { httpRequestChannel } from "@/inngest/channels/http-request";
 import { inngest } from "@/inngest/client";
-import { manualTriggerChannel } from "@/inngest/channels/manual-trigger";
+import { googleFormTriggerChannel } from "@/inngest/channels/google-form-trigger";
 
-export type ManualTriggerToken = Realtime.Token<
-  typeof manualTriggerChannel,
+export type GoogleFormTriggerToken = Realtime.Token<
+  typeof googleFormTriggerChannel,
   ["status"]
   >;
 
@@ -15,10 +14,10 @@ export type ManualTriggerToken = Realtime.Token<
 // y recibir mensajes del tópic status. Este token es necesario para establecer una conexión segura y autorizada con 
 // el servicio de Inngest Realtime. De esta manera el frontend puede escuchar los eventos de estado de los nodos http.
 
-export async function fetchManualTriggerRealtimeToken(): Promise<ManualTriggerToken> { 
+export async function fetchGoogleFormTriggerRealtimeToken(): Promise<GoogleFormTriggerToken> { 
     
     const token = await getSubscriptionToken(inngest, {
-      channel: manualTriggerChannel(),
+      channel: googleFormTriggerChannel(),
       topics: ["status"],
     });
 
