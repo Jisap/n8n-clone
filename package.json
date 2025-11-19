@@ -12,6 +12,7 @@
     "prisma:studio": "dotenv -e .env.local -- prisma studio",
     "prisma:generate": "dotenv -e .env.local -- prisma generate",
     "inngest:dev": "inngest-cli dev",
+    "ngrok:dev": "ngrok http 3000",
     "dev:all": "mprocs"
   },
   "dependencies": {
