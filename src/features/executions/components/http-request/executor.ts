@@ -25,9 +25,9 @@ Handlebars.registerHelper("json", (context) => {               // Se registra un
 
 
 type HttpRequestData = {
-  variableName: string;
-  endpoint: string;
-  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  variableName?: string;
+  endpoint?: string;
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: string;
 }
 
@@ -46,38 +46,42 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async({
     })
   )
 
-  if(!data.endpoint){
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error"
-      })
-    )
-    throw new NonRetriableError("HTTP Request node: No endpoint configured");
-  }
-
-  if(!data.variableName){
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error"
-      })
-    )
-    throw new NonRetriableError("Variable name is not configured");
-  }
-
-  if(!data.method){
-    await publish(
-      httpRequestChannel().status({
-        nodeId,
-        status: "error"
-      })
-    )
-    throw new NonRetriableError("Method is not configured");
-  }
+  
 
   try {
     const result = await step.run(`http-request`, async () => {             // Run the http request step
+      
+      if (!data.endpoint) {
+        await publish(
+          httpRequestChannel().status({
+            nodeId,
+            status: "error"
+          })
+        )
+        throw new NonRetriableError("HTTP Request node: No endpoint configured");
+      }
+
+      if (!data.variableName) {
+        await publish(
+          httpRequestChannel().status({
+            nodeId,
+            status: "error"
+          })
+        )
+        throw new NonRetriableError("Variable name is not configured");
+      }
+
+      if (!data.method) {
+        await publish(
+          httpRequestChannel().status({
+            nodeId,
+            status: "error"
+          })
+        )
+        throw new NonRetriableError("Method is not configured");
+      }
+      
+      
       const endpoint = Handlebars.compile(data.endpoint)(context)           // Get the endpoint from the data. Handlebars compila el endpoint teniendo encuenta el contexto del nodo anterior
       const method = data.method;                                           // Get the method from the data
   
