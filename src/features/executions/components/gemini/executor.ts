@@ -90,7 +90,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
       "gemini-generate-text",
       generateText,
       {
-        model: google(data.model || "gemini-1.5-flash"),            // Selecciona el modelo de la API de Google Generative AI
+        model: google(data.model || "gemini-pro"),            // Selecciona el modelo de la API de Google Generative AI
         system: systemPrompt,
         prompt: UserPrompt,
         experimental_telemetry: {
