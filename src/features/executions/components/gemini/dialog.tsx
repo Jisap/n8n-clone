@@ -49,7 +49,7 @@ const formSchema = z.object({
     .regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/, {
       message: "Variable name must start with a letter or underscore and container only letters, numbers, and underscores"
     }),
-  model: z.enum(AVAILABLE_MODELS),
+  model: z.string().min(1, "Model is required"),
   systemPrompt: z.string().optional(),
   userPrompt: z.string().min(1, "User prompt is required"),
 })
