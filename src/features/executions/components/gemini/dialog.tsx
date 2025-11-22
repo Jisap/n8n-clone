@@ -35,10 +35,8 @@ import { useEffect, use } from 'react';
 
 
 export const AVAILABLE_MODELS = [
-  "gemini-pro",           // Modelo más estable y compatible
-  "gemini-1.0-pro",       // Versión específica que suele funcionar
   "gemini-2.5-flash",     // Modelo más reciente (si está disponible)
-  "gemini-2.5-pro",       // Modelo más reciente (si está disponible)
+  "gemini-2.5-pro",       // Estos modelos cambian constantemente y hay que actualizar la lista.
 ] as const;
 
 const formSchema = z.object({
