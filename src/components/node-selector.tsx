@@ -60,6 +60,12 @@ const executionNodes: NodeTypeOption[] = [
     description: "Makes an HTTP request to a specified URL",
     icon: GlobeIcon,
   },
+  {
+    type: NodeType.GEMINI,
+    label: "Gemini",
+    description: "Uses Gemini to execute a flow",
+    icon: "/logos/gemini.svg",
+  },
 ]
 
 interface NodeSelectorProps {
