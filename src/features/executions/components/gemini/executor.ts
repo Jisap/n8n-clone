@@ -115,7 +115,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
 
     return {
       ...context,                                                   // Devuelve el contexto actual
-      [data.variableName]: { aiResponse: text }                     // Agrega el texto a la variable de contexto
+      [data.variableName]: { text }                     // Agrega el texto a la variable de contexto
     }
 
   } catch (error) {

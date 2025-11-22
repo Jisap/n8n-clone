@@ -34,6 +34,9 @@ import { useForm } from "react-hook-form"
 import { useEffect, use } from 'react';
 
 
+// Si se quieren obtener los modelos disponibles:
+// curl -s "https://generativelanguage.googleapis.com/v1beta/models?key=TU_API_KEY" | jq '.models[].name' | grep gemini
+
 export const AVAILABLE_MODELS = [
   "gemini-2.5-flash",     // Modelo más reciente (si está disponible)
   "gemini-2.5-pro",       // Estos modelos cambian constantemente y hay que actualizar la lista.
@@ -88,7 +91,7 @@ export const GeminiDialog = ({
     }
   },[open, defaultValues, form])
 
-  const watchVariableName = form.watch("variableName") || "MyApiCall";  // Permite obtener el valor del campo "variableName" en el formulario
+  const watchVariableName = form.watch("variableName") || "My Gemini Call";  // Permite obtener el valor del campo "variableName" en el formulario
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     {
@@ -123,13 +126,13 @@ export const GeminiDialog = ({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="myApiCall"
+                      placeholder="myGeminiCall"
                     />
                   </FormControl>
 
                   <FormDescription>
                     Use this name to reference the result in other nodes:{" "}
-                    {`{{${watchVariableName}.httpResponse.data}}`}
+                    {`{{${watchVariableName}.text}}`}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
