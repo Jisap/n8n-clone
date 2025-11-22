@@ -34,7 +34,7 @@ import { useForm } from "react-hook-form"
 import { useEffect, use } from 'react';
 
 
-const AVAILABLE_MODELS = [
+export const AVAILABLE_MODELS = [
   "gemini-1.5-flash",
   "gemini-1.5flash-8b",
   "gemini-1.5-pro",
@@ -118,6 +118,29 @@ export const GeminiDialog = ({
 
             <FormField
               control={form.control}
+              name="variableName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Variable Name</FormLabel>
+
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="myApiCall"
+                    />
+                  </FormControl>
+
+                  <FormDescription>
+                    Use this name to reference the result in other nodes:{" "}
+                    {`{{${watchVariableName}.httpResponse.data}}`}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="model"
               render={({ field }) => (
                 <FormItem>
@@ -144,29 +167,6 @@ export const GeminiDialog = ({
 
                   <FormDescription>
                     The Google Gemini model to use for completion
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="variableName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Variable Name</FormLabel>
-
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="myApiCall"
-                    />
-                  </FormControl>
-
-                  <FormDescription>
-                    Use this name to reference the result in other nodes:{" "}
-                    {`{{${watchVariableName}.httpResponse.data}}`}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

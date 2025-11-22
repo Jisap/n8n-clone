@@ -3,16 +3,17 @@
 import { Node, NodeProps, useReactFlow } from "@xyflow/react";
 import { memo, useState } from "react";
 import { BaseExecutionNode } from "../base-execution-node";
-import { GeminiDialog, GeminiFormValues } from "./dialog";
+import { AVAILABLE_MODELS, GeminiDialog, GeminiFormValues } from "./dialog";
 import { useNodeStatus } from "../../hooks/use-node-status";
 import { fetchHttpRequestRealtimeToken } from "./actions";
 import { HTTP_REQUEST_CHANNEL_NAME } from "@/inngest/channels/http-request";
 
 type GeminiNodeData = {
   variableName?: string;
-  endpoint?: string;
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-  body?: string;
+  //model?: "gemini-1.5-flash" | "gemini-1.5flash-8b" | "gemini-1.5-pro" | "gemini-1.0-pro" | "gemini-pro";
+  model?: typeof AVAILABLE_MODELS[number];
+  systemPrompt?: string;
+  userPrompt?: string;
 }
 
 type GeminiNodeType = Node<GeminiNodeData>;
@@ -49,8 +50,8 @@ export const GeminiNode = memo((props: NodeProps<GeminiNodeType>) => {
   }
 
   const nodeData = props.data; 
-  const description = nodeData?.endpoint
-    ? `${nodeData.method || "GET"}: ${nodeData.endpoint}`
+  const description = nodeData?.userPrompt
+    ? `${nodeData.model || AVAILABLE_MODELS[0]}: ${nodeData.userPrompt.slice(0, 50)}...`
     : "Not configured"
 
 
