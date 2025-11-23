@@ -45,6 +45,9 @@ export const AVAILABLE_MODELS = [
   "mixtral-8x7b-32768",    // Modelo Mixtral servido por Groq
   "gpt-4o",                // Modelo OpenAI (requiere API key de OpenAI)
   "gpt-4o-mini",           // Modelo OpenAI (requiere API key de OpenAI)
+  "qwen/qwen3-32b",        // Modelo Qwen servido por Groq
+  "moonshotai/kimi-k2-instruct-0905",  // Modelo Kimi servido por Groq
+
 ] as const;
 
 const formSchema = z.object({
