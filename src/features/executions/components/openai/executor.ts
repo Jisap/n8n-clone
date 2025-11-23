@@ -1,10 +1,9 @@
 import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import Handlebars from "handlebars"; // Lee los templates strings teniendo en cuenta el contexto de la respuesta del nodo anterior
-import { AVAILABLE_MODELS } from "./dialog";
-import { geminiChannel } from "@/inngest/channels/gemini";
+import { openaiChannel } from "@/inngest/channels/openai";
 
 
 Handlebars.registerHelper("json", (context) => {               // Se registra un "helper" de Handlebars llamado "json" que recibe como parametro un objeto context (respuesta del nodo anterior). 
@@ -27,14 +26,14 @@ Handlebars.registerHelper("json", (context) => {               // Se registra un
 // }
 
 
-type GeminiData = {
+type OpenAiData = {
   variableName?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
 }
 
-export const geminiExecutor: NodeExecutor<GeminiData> = async({
+export const openaiExecutor: NodeExecutor<OpenAiData> = async({
   data,
   nodeId,
   context, // is the previous node's output
@@ -43,7 +42,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
 }) => {
   
   await publish(
-    geminiChannel().status({
+    openaiChannel().status({
       nodeId,
       status: "loading"
     })
@@ -51,7 +50,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
 
   if(!data.variableName) {
     await publish(
-      geminiChannel().status({
+      openaiChannel().status({
         nodeId,
         status: "error"
       })
@@ -61,7 +60,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
 
   if(!data.userPrompt){
     await publish(
-      geminiChannel().status({
+      openaiChannel().status({
         nodeId,
         status: "error"
       })
@@ -79,18 +78,19 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
 
   //TODO: Fetch credential that user selected
 
-  const credentialValue = process.env.GOOGLE_GENERATIVE_AI_API_KEY!; // apiKey
+  const credentialValue = process.env.OPEN_API_KEY!; // apiKey
 
-  const google = createGoogleGenerativeAI({                          // Instancia la clase de la API de Google Generative AI
+  const openai = createOpenAI({                          // Instancia la clase de la API de Google Generative AI
     apiKey: credentialValue,
+    baseURL: "https://api.groq.com/openai/v1",
   });
 
   try {
     const { steps } = await step.ai.wrap(
-      "gemini-generate-text",
+      "openai-generate-text",
       generateText,
       {
-        model: google(data.model || "gemini-2.5-flash"),            // Selecciona el modelo de la API de Google Generative AI
+        model: openai(data.model || "openai/gpt-oss-20b"),            // Selecciona el modelo de la API de Google Generative AI
         system: systemPrompt,
         prompt: UserPrompt,
         experimental_telemetry: {
@@ -101,13 +101,16 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
       }
     );
 
-    const text =                                                    // Extrae el texto de la respuesta
-      steps[0].content[0].type === "text"                           // Comprueba si el tipo de contenido es "text"
-        ? steps[0].content[0].text                                  // Si es "text", extrae el texto
-        : ""                                                        // Si no es "text", devuelve una cadena vacía
+    // Buscar el elemento con type: "text" en el array content
+    // porque puede haber elementos de tipo "reasoning" primero
+    const textContent = steps[0]?.content?.find(
+      (item) => item.type === "text"
+    );
+
+    const text = (textContent && "text" in textContent) ? textContent.text : "";
 
     await publish(
-      geminiChannel().status({
+      openaiChannel().status({
         nodeId,
         status: "success"
       })
@@ -120,7 +123,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
 
   } catch (error) {
     await publish(
-      geminiChannel().status({
+      openaiChannel().status({
         nodeId,
         status: "error"
       })

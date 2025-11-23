@@ -66,6 +66,12 @@ const executionNodes: NodeTypeOption[] = [
     description: "Uses Gemini to execute a flow",
     icon: "/logos/gemini.svg",
   },
+  {
+    type: NodeType.OPENAI,
+    label: "OpenAI",
+    description: "Uses OpenAI to execute a flow",
+    icon: "/logos/openai.svg",
+  },
 ]
 
 interface NodeSelectorProps {
