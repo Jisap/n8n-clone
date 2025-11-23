@@ -35,7 +35,7 @@ import { useEffect, use } from 'react';
 
 
 // Si se quieren obtener los modelos disponibles:
-// Obten tu API Key de pruebas en groq.com
+// Obten de forma gratuita tu API Key de pruebas en groq.com
 
 export const AVAILABLE_MODELS = [
   "openai/gpt-oss-20b",    // Modelo de código abierto de OpenAI servido por Groq
