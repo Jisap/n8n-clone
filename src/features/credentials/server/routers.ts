@@ -1,10 +1,9 @@
 
 import { PAGINATION } from "@/config/constants";
-import { CredentialType, NodeType } from "@/generated/prisma/client";
-import type { Node, Edge } from "@xyflow/react"
+import { CredentialType } from "@/generated/prisma/client";
 import prisma from "@/lib/db";
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
-import { generateSlug } from "random-word-slugs"
+
 import z from "zod";
 
 
@@ -51,7 +50,7 @@ export const credentialsRouter = createTRPCRouter({
         value: z.string().min(1, "Value is required"),
       })
     )
-    .mutation(async({ ctx, input  }) => {
+    .mutation(({ ctx, input  }) => {
 
       const { id, name, type, value } = input;
 
