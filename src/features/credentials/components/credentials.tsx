@@ -1,8 +1,17 @@
 "use client"
 
-import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
-import { useCreateCredential, useRemoveCredential, useSuspenseCredentials } from "../hooks/use-credentials";
-import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
+import { 
+  EmptyView, 
+  EntityContainer, 
+  EntityHeader, 
+  EntityItem, 
+  EntityList, 
+  EntityPagination, 
+  EntitySearch, 
+  ErrorView, 
+  LoadingView 
+} from "@/components/entity-components";
+import { useRemoveCredential, useSuspenseCredentials } from "../hooks/use-credentials";
 import { useRouter } from "next/navigation";
 import { useCredentialsParams } from "../hooks/use-credentials-params";
 import { useEntitySearch } from "@/hooks/use-entity-search";
