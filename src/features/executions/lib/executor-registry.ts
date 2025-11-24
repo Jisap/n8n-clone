@@ -6,6 +6,7 @@ import { httpRequestExecutor } from "../components/http-request/executor";
 import { stripeTriggerExecutor } from "@/features/triggers/components/stripe-trigger/executor";
 import { geminiExecutor } from "../components/gemini/executor";
 import { openaiExecutor } from "../components/openai/executor";
+import { anthropicExecutor } from "../components/anthropic/executor";
 
 
 
@@ -17,7 +18,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {             //
   [NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
   [NodeType.GEMINI]: geminiExecutor,
   [NodeType.OPENAI]: openaiExecutor,   
-  [NodeType.ANTHROPIC]: geminiExecutor,// TODO: fix later
+  [NodeType.ANTHROPIC]: anthropicExecutor,// TODO: fix later
 }
 
 

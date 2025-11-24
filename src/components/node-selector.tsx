@@ -72,6 +72,12 @@ const executionNodes: NodeTypeOption[] = [
     description: "Uses OpenAI to execute a flow",
     icon: "/logos/openai.svg",
   },
+  {
+    type: NodeType.ANTHROPIC,
+    label: "Anthropic",
+    description: "Uses Anthropic to execute a flow",
+    icon: "/logos/anthropic.svg",
+  },
 ]
 
 interface NodeSelectorProps {
