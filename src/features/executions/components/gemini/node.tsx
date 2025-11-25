@@ -11,8 +11,7 @@ import { GEMINI_CHANNEL_NAME } from "@/inngest/channels/gemini";
 
 type GeminiNodeData = {
   variableName?: string;
-  //model?: "gemini-1.5-flash" | "gemini-1.5flash-8b" | "gemini-1.5-pro" | "gemini-1.0-pro" | "gemini-pro";
-  //model?: typeof AVAILABLE_MODELS[number];
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;

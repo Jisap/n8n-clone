@@ -5,6 +5,7 @@ import { generateText } from "ai";
 import Handlebars from "handlebars"; // Lee los templates strings teniendo en cuenta el contexto de la respuesta del nodo anterior
 import { anthropicChannel } from "@/inngest/channels/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
+import prisma from "@/lib/db";
 
 
 
@@ -30,6 +31,7 @@ Handlebars.registerHelper("json", (context) => {               // Se registra un
 
 type AnthropicData = {
   variableName?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -60,6 +62,16 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async({
     throw new NonRetriableError("Variable name is required");
   }
 
+  if (!data.credentialId) {
+    await publish(
+      anthropicChannel().status({
+        nodeId,
+        status: "error"
+      })
+    );
+    throw new NonRetriableError("Anthropic node: Credential is required");
+  }
+
   if(!data.userPrompt){
     await publish(
       anthropicChannel().status({
@@ -70,7 +82,6 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async({
     throw new NonRetriableError("User prompt is required");
   }
 
-  // TODO: Add throw is credential is missign
 
   const systemPrompt = data.systemPrompt
     ? Handlebars.compile(data.systemPrompt)(context)
@@ -78,12 +89,22 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async({
 
   const UserPrompt = Handlebars.compile(data.userPrompt)(context);
 
-  //TODO: Fetch credential that user selected
+  const credential = await step.run("get-credential", () => {          // Obtiene el credential que el usuario selecciono
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId
+      }
+    })
+  });
 
-  const credentialValue = process.env.ANTHROPIC_API_KEY!;              // Estoy usando las apiKeys de prueba de Groq.com
+  if (!credential) {
+    throw new NonRetriableError("Anthropic node: Credential not found");
+  }
 
-  const anthropic = createOpenAI({                                     // Aqui habría que usar createAnthropic como instancia la clase de la API de Anthropic
-    apiKey: credentialValue,                                           // Como no tengo credenciales de Anthropic, estoy usando las apiKeys de prueba de Groq.com
+  //const credentialValue = process.env.ANTHROPIC_API_KEY!;             // Esta apikey tiene que ser establecida en el dialog de creacion de credenciales
+
+  const anthropic = createOpenAI({                                      // Aqui habría que usar createAnthropic como instancia la clase de la API de Anthropic
+    apiKey: credential.value,                                           // Como no tengo credenciales de Anthropic, estoy usando las apiKeys de prueba de Groq.com
     baseURL: "https://api.groq.com/openai/v1",
   });
 
