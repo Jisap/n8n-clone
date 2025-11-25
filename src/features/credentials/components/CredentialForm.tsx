@@ -1,8 +1,12 @@
 "use client"
 
 import { CredentialType } from "@/generated/prisma/enums";
-import { useRouter } from "next/navigation";
-import { useCreateCredential, useUpdateCcredentials } from "../hooks/use-credentials";
+import { useRouter, useParams } from "next/navigation";
+import { 
+  useCreateCredential, 
+  useUpdateCcredentials, 
+  useSuspenseCredential 
+} from "../hooks/use-credentials";
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +22,25 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import Image from "next/image";
 
 
 const formSchema = z.object({
@@ -59,12 +82,62 @@ const CredentialForm = ({ initialData }: CredentialFormProps) => {
       type: CredentialType.OPENAI,
       value: ""
     }
-  })
+  });
+
+  const onSubmit = async (values: FormValues) => {
+    if (isEdit && initialData?.id) {                     // Si es una edición
+      await updateCredential.mutateAsync({               // Se actualiza las credenciales
+        id: initialData?.id,
+        ...values
+      });
+    } else {                                             // En caso contrario, se crea una nueva credencial
+      await createCredential.mutateAsync(values,{
+        onError: (error) => {                            // Si ocurre algún error (FORBIDDEN -> no tiene una suscripción válida)
+          handleError(error);                            // Se muestra el modal de actualización para pasar a la versión Pro
+          console.error(error);
+        }
+      });
+    }
+  }
 
   return (
-    <div>
+    <>
+      {modal}
+      <Card className="shadow-none">
+        <CardHeader>
+          <CardTitle>
+            {isEdit ? "Edit Credential" : "Create Credential"}
+          </CardTitle>
 
-    </div>
+          <CardDescription>
+            {isEdit ? "Update your API key or credential details" : "Add a new API Key or credential to your account"}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField 
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        placeholder="My API Key" 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </>
   )
 }
 
