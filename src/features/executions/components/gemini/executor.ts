@@ -5,6 +5,7 @@ import { generateText } from "ai";
 import Handlebars from "handlebars"; // Lee los templates strings teniendo en cuenta el contexto de la respuesta del nodo anterior
 import { AVAILABLE_MODELS } from "./dialog";
 import { geminiChannel } from "@/inngest/channels/gemini";
+import prisma from "@/lib/db";
 
 
 Handlebars.registerHelper("json", (context) => {               // Se registra un "helper" de Handlebars llamado "json" que recibe como parametro un objeto context (respuesta del nodo anterior). 
@@ -29,6 +30,7 @@ Handlebars.registerHelper("json", (context) => {               // Se registra un
 
 type GeminiData = {
   variableName?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -59,6 +61,16 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
     throw new NonRetriableError("Variable name is required");
   }
 
+  if(!data.credentialId){
+    await publish(
+      geminiChannel().status({
+        nodeId,
+        status: "error"
+      })
+    );
+    throw new NonRetriableError("Gemini node: Credential is required");
+  }
+
   if(!data.userPrompt){
     await publish(
       geminiChannel().status({
@@ -69,20 +81,28 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
     throw new NonRetriableError("User prompt is required");
   }
 
-  // TODO: Add throw is credential is missign
-
   const systemPrompt = data.systemPrompt
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant."
 
   const UserPrompt = Handlebars.compile(data.userPrompt)(context);
 
-  //TODO: Fetch credential that user selected
+  const credential = await step.run("get-credential", () => {          // Obtiene el credential que el usuario selecciono
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId
+      }
+    })
+  });
 
-  const credentialValue = process.env.GOOGLE_GENERATIVE_AI_API_KEY!; // apiKey
+  if(!credential){
+    throw new NonRetriableError("Gemini node: Credential not found");
+  }
 
-  const google = createGoogleGenerativeAI({                          // Instancia la clase de la API de Google Generative AI
-    apiKey: credentialValue,
+  //const credentialValue = process.env.GOOGLE_GENERATIVE_AI_API_KEY!; // Esta apikey tiene que ser establecida en el dialog de creacion de credenciales
+
+  const google = createGoogleGenerativeAI({                            // Instancia la clase de la API de Google Generative AI
+    apiKey: credential.value,                                          // con la apikey que el usuario selecciono
   });
 
   try {
@@ -90,7 +110,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
       "gemini-generate-text",
       generateText,
       {
-        model: google(data.model || "gemini-2.5-flash"),            // Selecciona el modelo de la API de Google Generative AI
+        model: google(data.model || "gemini-2.5-flash"),              // Selecciona el modelo de la API de Google Generative AI
         system: systemPrompt,
         prompt: UserPrompt,
         experimental_telemetry: {
