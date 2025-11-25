@@ -41,6 +41,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import Image from "next/image";
+import Link from "next/link";
 
 
 const formSchema = z.object({
@@ -92,6 +93,9 @@ const CredentialForm = ({ initialData }: CredentialFormProps) => {
       });
     } else {                                             // En caso contrario, se crea una nueva credencial
       await createCredential.mutateAsync(values,{
+        onSuccess: (data) => {
+          router.push(`/credentials/${data.id}`);
+        },
         onError: (error) => {                            // Si ocurre algún error (FORBIDDEN -> no tiene una suscripción válida)
           handleError(error);                            // Se muestra el modal de actualización para pasar a la versión Pro
           console.error(error);
@@ -191,6 +195,28 @@ const CredentialForm = ({ initialData }: CredentialFormProps) => {
                   </FormItem>
                 )}
               />
+
+              <div className="flex gap-4">
+                <Button
+                  type="submit"
+                  disabled={
+                    createCredential.isPending || 
+                    updateCredential.isPending
+                  }
+                >
+                  {isEdit ? "Update" : "Create"}
+                </Button>
+
+                <Button 
+                  type="button"
+                  variant="outline"
+                  asChild
+                >
+                  <Link href="/credentials" prefetch>
+                    Cancel
+                  </Link>
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
