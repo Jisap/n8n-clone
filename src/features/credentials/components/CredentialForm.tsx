@@ -1,7 +1,7 @@
 "use client"
 
 import { CredentialType } from "@/generated/prisma/enums";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { 
   useCreateCredential, 
   useUpdateCcredentials, 
@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,18 +24,14 @@ import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -67,7 +62,7 @@ interface CredentialFormProps {
   }
 }
 
-const CredentialForm = ({ initialData }: CredentialFormProps) => {
+export const CredentialForm = ({ initialData }: CredentialFormProps) => {
 
   const router = useRouter();
   const createCredential = useCreateCredential();
@@ -225,4 +220,11 @@ const CredentialForm = ({ initialData }: CredentialFormProps) => {
   )
 }
 
-export default CredentialForm
+export const CredentialView = ({ credentialId }:{credentialId:string}) => {
+
+  const { data: credential } = useSuspenseCredential(credentialId); // GetOne credential con Suspense
+
+  return (
+    <CredentialForm initialData={credential} />
+  )
+}

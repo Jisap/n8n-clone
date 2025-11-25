@@ -1,4 +1,4 @@
-import CredentialForm from '@/features/credentials/components/CredentialForm';
+import { CredentialForm } from '@/features/credentials/components/CredentialForm';
 import { requireAuth } from '@/lib/auth-utils';
 import React from 'react'
 
