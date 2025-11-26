@@ -4,6 +4,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import Handlebars from "handlebars"; // Lee los templates strings teniendo en cuenta el contexto de la respuesta del nodo anterior
 import { openaiChannel } from "@/inngest/channels/openai";
+import prisma from "@/lib/db";
 
 
 Handlebars.registerHelper("json", (context) => {               // Se registra un "helper" de Handlebars llamado "json" que recibe como parametro un objeto context (respuesta del nodo anterior). 
@@ -28,6 +29,7 @@ Handlebars.registerHelper("json", (context) => {               // Se registra un
 
 type OpenAiData = {
   variableName?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -58,6 +60,16 @@ export const openaiExecutor: NodeExecutor<OpenAiData> = async({
     throw new NonRetriableError("Variable name is required");
   }
 
+  if (!data.credentialId) {
+    await publish(
+      openaiChannel().status({
+        nodeId,
+        status: "error"
+      })
+    );
+    throw new NonRetriableError("Openai node: Credential is required");
+  }
+
   if(!data.userPrompt){
     await publish(
       openaiChannel().status({
@@ -68,20 +80,28 @@ export const openaiExecutor: NodeExecutor<OpenAiData> = async({
     throw new NonRetriableError("User prompt is required");
   }
 
-  // TODO: Add throw is credential is missign
-
   const systemPrompt = data.systemPrompt
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant."
 
   const UserPrompt = Handlebars.compile(data.userPrompt)(context);
 
-  //TODO: Fetch credential that user selected
+  const credential = await step.run("get-credential", () => {          // Obtiene el credential que el usuario selecciono
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId
+      }
+    })
+  });
 
-  const credentialValue = process.env.OPEN_API_KEY!; // apiKey
+  if (!credential) {
+    throw new NonRetriableError("Anthropic node: Credential not found");
+  }
 
-  const openai = createOpenAI({                          // Instancia la clase de la API de Google Generative AI
-    apiKey: credentialValue,
+  //const credentialValue = process.env.OPEN_API_KEY!;   // Esta apikey tiene que ser establecida en el dialog de creacion de credenciales
+
+  const openai = createOpenAI({                          // Estoy usando las apikeys de prueba de Groq.com
+    apiKey: credential.value, 
     baseURL: "https://api.groq.com/openai/v1",
   });
 
