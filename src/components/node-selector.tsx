@@ -78,6 +78,12 @@ const executionNodes: NodeTypeOption[] = [
     description: "Uses Anthropic to execute a flow",
     icon: "/logos/anthropic.svg",
   },
+  {
+    type: NodeType.DISCORD,
+    label: "Discord",
+    description: "Send a message to a Discord",
+    icon: "/logos/discord.svg",
+  }
 ]
 
 interface NodeSelectorProps {
