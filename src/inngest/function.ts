@@ -52,6 +52,17 @@ export const executeWorkflow = inngest.createFunction(
       return topologicalSort(workflow.nodes, workflow.connections);       // Se ordena los nodos de acuerdo a las conexiones
     });
 
+    const userId = await step.run("find-user-id", async () => {            // Se obtiene el id del usuario que ejecuta el workflow
+      const workflow = await prisma.workflow.findUniqueOrThrow({           
+        where: { id: workflowId },
+        select: {
+          userId: true
+        }
+      });
+
+      return workflow.userId;
+    })
+
     let context = event.data.initialData || {}                            // Se crea una variable context para almacenar los datos en tiempo de ejecución.
     
     for(const node of sortedNodes) {                                      // Se recorren los nodos ordenados y se ejecutan 
@@ -63,6 +74,7 @@ export const executeWorkflow = inngest.createFunction(
         context,                                                          // Se le pasa el contexto actual  
         step,                                                             // Se le pasa la herramienta de ejecución en inngest
         publish,                                                          // Se le pasa la herramienta de publicación de mensajes 
+        userId
       })
     }                                      
 

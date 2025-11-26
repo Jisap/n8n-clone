@@ -42,6 +42,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
   context, // is the previous node's output
   step,
   publish,
+  userId
 }) => {
   
   await publish(
@@ -90,7 +91,8 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
   const credential = await step.run("get-credential", () => {          // Obtiene el credential que el usuario selecciono
     return prisma.credential.findUnique({
       where: {
-        id: data.credentialId
+        id: data.credentialId,
+        userId
       }
     })
   });

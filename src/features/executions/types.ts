@@ -12,7 +12,8 @@ export interface NodeExecutorParams<TData = Record<string, unknown>> {  // Defin
   nodeId: string;
   context: WorkflowContext;
   step: StepTools;
-  publish: Realtime.PublishFn
+  publish: Realtime.PublishFn,
+  userId: string
 }
 
 export type NodeExecutor<TData = Record<string, unknown>> = (           // Define el tipo de ejecutor de nodo
