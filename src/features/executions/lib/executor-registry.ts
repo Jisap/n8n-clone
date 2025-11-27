@@ -8,6 +8,7 @@ import { geminiExecutor } from "../components/gemini/executor";
 import { openaiExecutor } from "../components/openai/executor";
 import { anthropicExecutor } from "../components/anthropic/executor";
 import { discordExecutor } from "../components/discord/executor";
+import { slackExecutor } from "../components/slack/executor";
 
 
 
@@ -21,7 +22,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {             //
   [NodeType.OPENAI]: openaiExecutor,   
   [NodeType.ANTHROPIC]: anthropicExecutor,
   [NodeType.DISCORD]: discordExecutor,
-  [NodeType.SLACK]: discordExecutor,
+  [NodeType.SLACK]: slackExecutor,
 }
 
 

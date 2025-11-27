@@ -83,6 +83,12 @@ const executionNodes: NodeTypeOption[] = [
     label: "Discord",
     description: "Send a message to a Discord",
     icon: "/logos/discord.svg",
+  },
+  {
+    type: NodeType.SLACK,
+    label: "Slack",
+    description: "Send a message to Slack",
+    icon: "/logos/slack.svg",
   }
 ]
 
