@@ -1,0 +1,84 @@
+
+import { PAGINATION } from "@/config/constants";
+import prisma from "@/lib/db";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+
+import z from "zod";
+
+
+
+
+export const executionsRouter = createTRPCRouter({
+  
+  
+  getOne: protectedProcedure
+      .input(z.object({ id: z.string() }))
+      .query(async({ ctx, input }) => {
+        return prisma.execution.findUniqueOrThrow({
+          where: {
+            id: input.id,                           // Se permite ver la execution que le pertenezca
+            workflow: { userId: ctx.auth.user.id }, // Solo permite ver las executions que le pertenezcan
+          },      
+        });       
+      }),
+  getMany: protectedProcedure
+    .input(
+      z.object({
+        page: z.number().default(PAGINATION.DEFAULT_PAGE),
+        pageSize: z
+          .number()
+          .min(PAGINATION.MIN_PAGE_SIZE)
+          .max(PAGINATION.MAX_PAGE_SIZE)
+          .default(PAGINATION.DEFAULT_PAGE_SIZE),
+      })
+    )
+    .query(async({ ctx, input }) => {
+      const { page, pageSize } = input;
+
+      const[items, totalCount] = await Promise.all([
+        prisma.execution.findMany({
+          skip: (page - 1) * pageSize,
+          take: pageSize,
+          where: {
+            workflow:{
+              userId: ctx.auth.user.id, // Se permite ver todos los executions que le pertenecen
+            },
+          },
+          orderBy: {
+            startedAt: "desc",
+          },
+          include: {
+            workflow:{
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }),
+        prisma.execution.count({
+          where: {
+            workflow:{
+              userId: ctx.auth.user.id,
+            }
+            
+          }
+        }),
+      ]);
+
+      const totalPages = Math.ceil(totalCount / pageSize);
+
+      const hasNextPage = page < totalPages;
+      const hasPreviousPage = page > 1;
+
+      return {
+        items,
+        page,
+        pageSize,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage,
+        totalCount,
+      };
+    }),   
+})
