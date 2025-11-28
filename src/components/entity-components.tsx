@@ -50,6 +50,7 @@ type EntitHeaderProps = {
       onNew?: never;          // Puede suceder que no se pase ni función ni hreg
       newButtonHref?: never;
     }
+   
   )
 
 export const EntityHeader = ({
