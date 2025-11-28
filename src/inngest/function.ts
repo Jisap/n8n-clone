@@ -4,7 +4,7 @@ import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
 import prisma from "@/lib/db";
 import { topologicalSort } from './utils';
-import { NodeType } from "@/generated/prisma/enums";
+import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/executions/lib/executor-registry";
 import { httpRequestChannel } from "./channels/http-request";
 import { manualTriggerChannel } from "./channels/manual-trigger";
@@ -21,11 +21,21 @@ import { slackChannel } from "./channels/slack";
 
 export const executeWorkflow = inngest.createFunction(
   { 
-    id: "execute-workflow", 
-    retries: 0 // Remove in production 
+    id: "execute-workflow",                  
+    retries: 0, // Remove in production
+    onFailure: async({ event, step }) => {
+      return prisma.execution.update({
+        where: { inngestEventId: event.data.event.id },
+        data: {
+          status: ExecutionStatus.FAILED,
+          error: event.data.error.message,
+          errorStack: event.data.error.stack
+        }
+      })
+    } 
   },
-  { event: "workflow/execute.workflow",
-    channels: [
+  { event: "workflow/execute.workflow",      // nombre del evento que activa la función.
+    channels: [                              // Lista de los posibles origenes de ese evento.
       httpRequestChannel(),
       manualTriggerChannel(),
       googleFormTriggerChannel(),
@@ -39,13 +49,24 @@ export const executeWorkflow = inngest.createFunction(
   },
   async ({ event, step, publish }) => {
 
-    const workflowId = event.data.workflowId;
-    if(!workflowId) {
-      throw new NonRetriableError("Workflow ID is missing");
+    const inngestEventId = event.id;                                        // Se obtiene el id del evento de inngest
+
+    const workflowId = event.data.workflowId;                               // Se obtiene el id del workflow
+    if(!workflowId || !inngestEventId) {
+      throw new NonRetriableError("Event ID or Workflow ID is missing");
     }
 
+    await step.run("create-execution", async () => {                        // Se crea una entrada en la tabla execution de tu base de datos 
+      return prisma.execution.create({
+        data: {
+          workflowId,
+          inngestEventId
+        }
+      })
+    })
+
     const sortedNodes = await step.run("prepare-workflow", async() => {
-      const workflow = await prisma.workflow.findUniqueOrThrow({           // Se obtiene el workflow
+      const workflow = await prisma.workflow.findUniqueOrThrow({           // Se obtiene de la base de datos el workflow completo incluyendo todos sus nodos y conexiones
         where: { id: workflowId },
         include: { 
           nodes: true, 
@@ -67,10 +88,12 @@ export const executeWorkflow = inngest.createFunction(
       return workflow.userId;
     })
 
-    let context = event.data.initialData || {}                            // Se crea una variable context para almacenar los datos en tiempo de ejecución.
+    // Bucle principal de ejecución
+
+    let context = event.data.initialData || {}                            // Se crea una variable context para almacenar los datos en tiempo de ejecución. Esta variable es un objeto que actúa como una "bolsa de datos" que se va pasando de nodo en nodo. Contiene los datos iniciales del trigger y se irá enriqueciendo con los resultados de cada nodo ejecutado.
     
     for(const node of sortedNodes) {                                      // Se recorren los nodos ordenados y se ejecutan 
-      const executor = getExecutor(node.type as NodeType);                // 1º se obtiene el ejecutor correspondiente al tipo de nodo
+      const executor = getExecutor(node.type as NodeType);                // 1º se obtiene el ejecutor correspondiente al tipo de nodo. Cada ejecutor devuelve la lógica específica que debe ejecutarse para ese nodo.
       
       context = await executor({                                          // 2º se ejecuta el ejecutor con los datos del nodo
         data: node.data as Record<string, unknown>,                       // Se le pasa data expecífica de ese nodo (url, method, etc)
@@ -80,7 +103,18 @@ export const executeWorkflow = inngest.createFunction(
         publish,                                                          // Se le pasa la herramienta de publicación de mensajes 
         userId
       })
-    }                                      
+    }                                                                     // Este nuevo context se asigna de nuevo a la variable, listo para ser usado por el siguiente nodo en el bucle.   
+    
+    await step.run("update-execution", async () => {                      // Una vez que el bucle termina (todos los nodos se han ejecutado), se ejecuta un último paso para actualizar el registro de la ejecución en la base de datos, marcando su estado como SUCCESS.
+      return prisma.execution.update({
+        where: { inngestEventId, workflowId },
+        data: {
+          status: ExecutionStatus.SUCCESS,
+          completedAt: new Date(),
+          output: context
+        }
+      })
+    })
 
     return {
       workflowId,                                                         // 3º se devuelve el id del workflow que se ejecutó

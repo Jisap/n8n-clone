@@ -106,6 +106,10 @@ const getStatusIcon = (status: ExecutionStatus) => {
     default:
       return <ClockIcon className="size-5 text-muted-foreground" />
   }
+};
+
+const formatStatus = (status: ExecutionStatus) => {
+  return status.charAt(0) + status.slice(1).toLowerCase();
 }
 
 export const ExecutionItem = ({ 
@@ -135,7 +139,7 @@ export const ExecutionItem = ({
   return (
     <EntityItem
       href={`/executions/${data.id}`}
-      title={data.status}
+      title={formatStatus(data.status)}
       subtitle={subtitle}
       image={
         <div className="size-8 flex items-center justify-center">
