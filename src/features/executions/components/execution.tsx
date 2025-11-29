@@ -186,6 +186,15 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
           </div>
         )}
 
+        {execution.output && (
+          <div className="mt-6 p-4 bg-muted rounded-md">
+            <p className="text-sm font-medium mb-2">Output</p>
+            <pre className="text-xs font-mono text-muted-foreground overflow-auto mt-2 p-2">
+              {JSON.stringify(execution.output, null, 2)}
+            </pre>
+          </div>
+        )}
+
       </CardContent>
     </Card>
   )
