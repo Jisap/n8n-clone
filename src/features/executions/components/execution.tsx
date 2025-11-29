@@ -75,17 +75,113 @@ export const ExecutionView = ({ executionId } : { executionId: string }) => {
 
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <p className="text-sm font-medium text-muted-foreground">
-            Workflow
-          </p>
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">
+              Workflow
+            </p>
 
-          <Link 
-            prefetch
-            className="text-sm hover:underline text-primary"
-            href={`/workflows/${execution.workflow.id}`}
-          >
-            {execution.workflow.name}
-          </Link>
+            <Link 
+              prefetch
+              className="text-sm hover:underline text-primary"
+              href={`/workflows/${execution.workflow.id}`}
+            >
+              {execution.workflow.name}
+            </Link>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">
+              Status
+            </p>
+
+            <p className="text-sm">
+              {formatStatus(execution.status)}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">
+              Started
+            </p>
+
+            <p className="text-sm">
+              {formatDistanceToNow(execution.startedAt, { addSuffix: true })}
+            </p>
+          </div>
+
+          {execution.completedAt ? (
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Completed
+              </p>
+
+              <p className="text-sm">
+                {formatDistanceToNow(execution.completedAt, { addSuffix: true })}
+              </p>
+            </div>
+          ): null}
+
+          {duration !== null ? (
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Duration
+              </p>
+
+              <p className="text-sm">
+                {duration}s
+              </p>
+            </div>
+          ): null}
+         
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">
+              Event ID
+            </p>
+
+            <p className="text-sm">
+              {execution.inngestEventId}
+            </p>
+          </div>
+         
+          {execution.error && (
+            <div className="mt-6 p-4 bg-red-50 rounded-md space-y-3">
+              <div>
+                <p className="text-sm font-medium text-red-900 mb-2">
+                  Error
+                </p>
+
+                <p className="text-sm text-red-800 font-mono">
+                  {execution.error}
+                </p>
+              </div>
+
+              {execution.errorStack && (
+                <Collapsible
+                  open={showStackTrace}
+                  onOpenChange={setShowStackTrace}
+                >
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-900 hover:text-red-300"
+                    >
+                      {showStackTrace
+                        ? "Hide Stack Trace"
+                        : "Show Stack Trace"
+                      }
+                    </Button>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                      <pre>
+                        {execution.errorStack}
+                      </pre>
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
