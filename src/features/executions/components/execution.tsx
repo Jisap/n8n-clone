@@ -1,3 +1,6 @@
+"use client"
+
+
 import { Button } from "@/components/ui/button";
 import { ExecutionStatus } from "@/generated/prisma/enums";
 import { formatDistanceToNow } from "date-fns";
