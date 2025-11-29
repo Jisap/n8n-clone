@@ -17,8 +17,18 @@ export const executionsRouter = createTRPCRouter({
         return prisma.execution.findUniqueOrThrow({
           where: {
             id: input.id,                           // Se permite ver la execution que le pertenezca
-            workflow: { userId: ctx.auth.user.id }, // Solo permite ver las executions que le pertenezcan
-          },      
+            workflow: { 
+              userId: ctx.auth.user.id              // Solo permite ver las executions que le pertenezcan
+            }, 
+          },
+          include: {
+            workflow: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }      
         });       
       }),
   getMany: protectedProcedure

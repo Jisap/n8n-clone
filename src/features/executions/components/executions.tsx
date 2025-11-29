@@ -11,15 +11,10 @@ import {
   LoadingView 
 } from "@/components/entity-components";
 import { useSuspenseExecutions } from "../hooks/use-executions";
-
 import { useExecutionsParams } from "../hooks/use-executions-params";
-
-import { CredentialType } from "@/generated/prisma/enums";
 import { formatDistanceToNow } from "date-fns";
-import { toast } from "sonner";
 import type { Execution } from "@/generated/prisma/client";
 import { ExecutionStatus } from "@/generated/prisma/enums";
-import Image from "next/image";
 import { CheckCircle2Icon, ClockIcon, Loader2Icon, XCircleIcon } from "lucide-react";
 
 
