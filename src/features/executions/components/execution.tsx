@@ -143,7 +143,7 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
             </p>
           </div>
         </div>
-
+      
         {execution.error && (
           <div className="mt-6 p-4 bg-red-50 rounded-md space-y-3">
             <div>
@@ -155,6 +155,7 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                 {execution.error}
               </p>
             </div>
+            
 
             {execution.errorStack && (
               <Collapsible
