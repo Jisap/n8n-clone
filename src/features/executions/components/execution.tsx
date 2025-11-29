@@ -8,7 +8,7 @@ import { ClockIcon, XCircleIcon, CheckCircle2Icon, Loader2Icon } from "lucide-re
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { 
+import {
   Card,
   CardContent,
   CardDescription,
@@ -44,7 +44,7 @@ const formatStatus = (status: ExecutionStatus) => {
 }
 
 
-export const ExecutionView = ({ executionId } : { executionId: string }) => {
+export const ExecutionView = ({ executionId }: { executionId: string }) => {
 
   const { data: execution } = useSuspenseExecution(executionId);
 
@@ -80,7 +80,7 @@ export const ExecutionView = ({ executionId } : { executionId: string }) => {
               Workflow
             </p>
 
-            <Link 
+            <Link
               prefetch
               className="text-sm hover:underline text-primary"
               href={`/workflows/${execution.workflow.id}`}
@@ -119,7 +119,7 @@ export const ExecutionView = ({ executionId } : { executionId: string }) => {
                 {formatDistanceToNow(execution.completedAt, { addSuffix: true })}
               </p>
             </div>
-          ): null}
+          ) : null}
 
           {duration !== null ? (
             <div>
@@ -131,8 +131,8 @@ export const ExecutionView = ({ executionId } : { executionId: string }) => {
                 {duration}s
               </p>
             </div>
-          ): null}
-         
+          ) : null}
+
           <div>
             <p className="text-sm font-medium text-muted-foreground">
               Event ID
@@ -142,47 +142,49 @@ export const ExecutionView = ({ executionId } : { executionId: string }) => {
               {execution.inngestEventId}
             </p>
           </div>
-         
-          {execution.error && (
-            <div className="mt-6 p-4 bg-red-50 rounded-md space-y-3">
-              <div>
-                <p className="text-sm font-medium text-red-900 mb-2">
-                  Error
-                </p>
-
-                <p className="text-sm text-red-800 font-mono">
-                  {execution.error}
-                </p>
-              </div>
-
-              {execution.errorStack && (
-                <Collapsible
-                  open={showStackTrace}
-                  onOpenChange={setShowStackTrace}
-                >
-                  <CollapsibleTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-900 hover:text-red-300"
-                    >
-                      {showStackTrace
-                        ? "Hide Stack Trace"
-                        : "Show Stack Trace"
-                      }
-                    </Button>
-                  </CollapsibleTrigger>
-
-                  <CollapsibleContent>
-                      <pre>
-                        {execution.errorStack}
-                      </pre>
-                  </CollapsibleContent>
-                </Collapsible>
-              )}
-            </div>
-          )}
         </div>
+
+        {execution.error && (
+          <div className="mt-6 p-4 bg-red-50 rounded-md space-y-3">
+            <div>
+              <p className="text-sm font-medium text-red-900 mb-2">
+                Error
+              </p>
+
+              <p className="text-sm text-red-800 font-mono">
+                {execution.error}
+              </p>
+            </div>
+
+            {execution.errorStack && (
+              <Collapsible
+                open={showStackTrace}
+                onOpenChange={setShowStackTrace}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-900 hover:text-red-300"
+                  >
+                    {showStackTrace
+                      ? "Hide Stack Trace"
+                      : "Show Stack Trace"
+                    }
+                  </Button>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent>
+                  <pre className="text-xs font-mono text-red-800 overflow-auto mt-2 p-2 bg-red-100 rounded"
+                  >
+                    {execution.errorStack}
+                  </pre>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </div>
+        )}
+
       </CardContent>
     </Card>
   )
