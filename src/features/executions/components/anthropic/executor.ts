@@ -6,6 +6,7 @@ import Handlebars from "handlebars"; // Lee los templates strings teniendo en cu
 import { anthropicChannel } from "@/inngest/channels/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
 import prisma from "@/lib/db";
+import { decrypt } from "@/lib/encryption";
 
 
 
@@ -106,7 +107,7 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async({
   //const credentialValue = process.env.ANTHROPIC_API_KEY!;             // Esta apikey tiene que ser establecida en el dialog de creacion de credenciales
 
   const anthropic = createOpenAI({                                      // Aqui habría que usar createAnthropic como instancia la clase de la API de Anthropic
-    apiKey: credential.value,                                           // Como no tengo credenciales de Anthropic, estoy usando las apiKeys de prueba de Groq.com
+    apiKey: decrypt(credential.value),                                           // Como no tengo credenciales de Anthropic, estoy usando las apiKeys de prueba de Groq.com
     baseURL: "https://api.groq.com/openai/v1",
   });
 

@@ -5,6 +5,7 @@ import { generateText } from "ai";
 import Handlebars from "handlebars"; // Lee los templates strings teniendo en cuenta el contexto de la respuesta del nodo anterior
 import { openaiChannel } from "@/inngest/channels/openai";
 import prisma from "@/lib/db";
+import { decrypt } from "@/lib/encryption";
 
 
 Handlebars.registerHelper("json", (context) => {               // Se registra un "helper" de Handlebars llamado "json" que recibe como parametro un objeto context (respuesta del nodo anterior). 
@@ -103,7 +104,7 @@ export const openaiExecutor: NodeExecutor<OpenAiData> = async({
   //const credentialValue = process.env.OPEN_API_KEY!;   // Esta apikey tiene que ser establecida en el dialog de creacion de credenciales
 
   const openai = createOpenAI({                          // Estoy usando las apikeys de prueba de Groq.com
-    apiKey: credential.value, 
+    apiKey: decrypt(credential.value), 
     baseURL: "https://api.groq.com/openai/v1",
   });
 

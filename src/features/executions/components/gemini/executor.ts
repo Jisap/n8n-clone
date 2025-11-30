@@ -3,9 +3,9 @@ import { NonRetriableError } from "inngest";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 import Handlebars from "handlebars"; // Lee los templates strings teniendo en cuenta el contexto de la respuesta del nodo anterior
-import { AVAILABLE_MODELS } from "./dialog";
 import { geminiChannel } from "@/inngest/channels/gemini";
 import prisma from "@/lib/db";
+import { decrypt } from '@/lib/encryption';
 
 
 Handlebars.registerHelper("json", (context) => {               // Se registra un "helper" de Handlebars llamado "json" que recibe como parametro un objeto context (respuesta del nodo anterior). 
@@ -104,7 +104,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async({
   //const credentialValue = process.env.GOOGLE_GENERATIVE_AI_API_KEY!; // Esta apikey tiene que ser establecida en el dialog de creacion de credenciales
 
   const google = createGoogleGenerativeAI({                            // Instancia la clase de la API de Google Generative AI
-    apiKey: credential.value,                                          // con la apikey que el usuario selecciono
+    apiKey: decrypt(credential.value),                                          // con la apikey que el usuario selecciono
   });
 
   try {
